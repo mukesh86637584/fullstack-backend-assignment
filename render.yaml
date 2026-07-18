@@ -1,0 +1,25 @@
+# Render Blueprint: FastAPI web service + managed Postgres
+# Deploy: Dashboard → New → Blueprint → connect this repo
+
+services:
+  - type: web
+    name: fullstack-backend-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHONPATH
+        value: .
+      - key: USE_MOCK_SOURCES
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: assignment-db
+          property: connectionString
+
+databases:
+  - name: assignment-db
+    plan: free
+    databaseName: assignment
