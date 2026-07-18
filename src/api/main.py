@@ -5,7 +5,9 @@ from contextlib import asynccontextmanager
 from datetime import date
 
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.responses import RedirectResponse
 
+from src.config import settings
 from src.db.connection import close_pool, run_migrations
 from src.metrics.ingest import ingest_stripe_transactions
 from src.metrics.service import compute_revenue_breakdown, compute_revenue_summary
@@ -16,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Starting API (use_mock_sources=%s)", settings.use_mock_sources)
     await run_migrations()
     yield
     await close_pool()
@@ -26,6 +29,11 @@ app = FastAPI(
     description="Sync pipeline + revenue metrics API",
     lifespan=lifespan,
 )
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/docs")
 
 
 @app.post("/sync/run")

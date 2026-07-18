@@ -8,7 +8,7 @@ from datetime import date, datetime, timezone
 import asyncpg
 import httpx
 
-from src.config import settings
+from src.config import settings, should_use_mock
 from src.db.connection import acquire
 from src.metrics.revenue_definition import COLLECTED_STATUS_ALLOWLIST, is_collected_status
 
@@ -115,7 +115,7 @@ MOCK_INVOICES = [
 
 
 async def ingest_stripe_transactions(use_mock: bool | None = None) -> int:
-    mock = settings.use_mock_sources if use_mock is None else use_mock
+    mock = should_use_mock(use_mock)
     count = 0
 
     if mock:

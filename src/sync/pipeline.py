@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
-from src.config import settings
+from src.config import should_use_mock
 from src.sync.sources.base import DataSource
 from src.sync.sources.hubspot import GoogleCalendarSource, HubSpotSource, StripePaymentsSource
 from src.sync.sources.mock import MockGoogleCalendarSource, MockHubSpotSource, MockStripePaymentsSource
@@ -26,7 +26,7 @@ class PipelineResult:
 
 
 def build_sources(use_mock: bool | None = None) -> list[DataSource]:
-    mock = settings.use_mock_sources if use_mock is None else use_mock
+    mock = should_use_mock(use_mock)
     if mock:
         return [
             MockHubSpotSource(),
