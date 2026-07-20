@@ -34,7 +34,7 @@ async def save_cursor(source: str, cursor: str | None, full_sync: bool = False) 
         await conn.execute(
             """
             INSERT INTO sync_cursors (source, cursor_value, last_sync_at, last_full_sync_at)
-            VALUES ($1, $2, $3, CASE WHEN $4 THEN $3 ELSE NULL END)
+            VALUES ($1, $2, $3::timestamptz, CASE WHEN $4 THEN $3::timestamptz ELSE NULL::timestamptz END)
             ON CONFLICT (source) DO UPDATE SET
                 cursor_value = EXCLUDED.cursor_value,
                 last_sync_at = EXCLUDED.last_sync_at,

@@ -162,7 +162,12 @@ class MockGoogleCalendarSource(DataSource):
             raise SourceFetchError("Google Calendar mock source is down")
         if cursor == "expired-token":
             raise StaleCursorError("Google Calendar sync token expired")
-        return FetchResult(records=[self.normalize(e) for e in self._events], next_cursor="sync-v2")
+        if cursor == "sync-v2":
+            return FetchResult(records=[], next_cursor=None)
+        return FetchResult(
+            records=[self.normalize(e) for e in self._events],
+            next_cursor="sync-v2",
+        )
 
     async def fetch_full(self) -> FetchResult:
         if self._fail:
